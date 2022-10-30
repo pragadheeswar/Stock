@@ -1,8 +1,11 @@
 from flask import Flask,render_template,redirect, url_for
 from flask import request
+from login_page import login_page
 import sqlite3 as sql
 
 app = Flask(__name__)
+app.register_blueprint(login_page,url_prefix="/login")
+app.secret_key="dskjaf"
 
 @app.route("/admin/product")
 def product():
@@ -121,4 +124,4 @@ def editQTY():
          return redirect(url_for('supplier')+"?msg="+msg)
 
 if __name__ == '__main__':
-    app.run(port=5050,debug=True)
+    app.run(port=5000,debug=True)
