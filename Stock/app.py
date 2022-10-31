@@ -1,4 +1,5 @@
-from flask import Flask,render_template,redirect, url_for
+import traceback
+from flask import Flask,render_template,redirect, url_for,session
 from flask import request
 from login_page import login_page
 import sqlite3 as sql
@@ -16,7 +17,7 @@ def product():
    cur.execute("select * from Product")
    
    rows = cur.fetchall();
-   return  render_template('product.html',rows = rows) 
+   return  render_template('product.html',rows = rows,user=session["name"]) 
 
 
 @app.route('/editProduct',methods = ['POST'])
@@ -70,7 +71,8 @@ def supplier():
    cur.execute("select * from Product")
    
    rows = cur.fetchall();
-   return  render_template('supplier.html',rows = rows)
+   name=session["name"]
+   return  render_template('supplier.html',rows = rows,user=name)
 
 
 
@@ -122,6 +124,44 @@ def editQTY():
       finally:
          con.close()
          return redirect(url_for('supplier')+"?msg="+msg)
+
+
+@app.route("/customer",methods=["GET","POST"])
+def customer():
+   con = sql.connect("database.sqlite")
+   con.row_factory = sql.Row
+   
+   cur = con.cursor()
+   cur.execute("select * from Product")
+   
+   rows = cur.fetchall();
+   # print(session["user"])
+   return  render_template('customer.html',rows = rows,user=session["name"])
+
+@app.route("/buyProduct",methods=["GET","POST"])
+def buyProduct():
+   if request.method == 'POST':
+      con = sql.connect("database.sqlite")
+      cur = con.cursor()
+      try:
+         productID = request.form['ProductID']
+         # productName = request.form['NEWProductName']
+        #  productDescription=request.form['NEWProductDescription']
+         ProductQTY=request.form['NEWProductQty']
+         print(productID,ProductQTY)
+         print(session["name"])
+         cur.execute("UPDATE Product SET QTY = QTY-? WHERE productID = ?",(ProductQTY,productID) )
+         
+         con.commit()
+         msg = "Product Edited "
+      except Exception:
+         con.rollback()
+         msg = "error in operation"
+         traceback.print_exc()
+      
+      finally:
+         con.close()
+         return redirect(url_for('customer')+"?msg="+msg)
 
 if __name__ == '__main__':
     app.run(port=5000,debug=True)

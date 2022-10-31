@@ -12,11 +12,19 @@ def admin_login():
         name=request.form["name"]
         password=request.form["password"]
         if(name=="admin" and password=="admin"):
+            session["name"]=name
+
             return redirect(url_for("product"))
         else:
             flash("Username or Password Incorrect",'danger')
             return redirect(url_for("login_page.admin_login"))
     return render_template("a_login.html")
+
+@login_page.route("/admin/logout",methods = ["GET","POST"])
+def a_logout():
+    session.clear()
+    flash("Logout Successfully",'success')
+    return redirect(url_for("login_page.admin_login"))
 
 
 @login_page.route("/customer",methods = ["GET","POST"])
@@ -31,11 +39,19 @@ def c_login():
         con.close()
         if data:
             session["name"]=name
-            return redirect(url_for("supplier"))
+            # return redirect(url_for("supplier"))
+            return redirect(url_for("customer"))
         else:
             flash("Username or Password Incorrect",'danger')
             return redirect(url_for("login_page.c_login"))
     return render_template("c_login.html")
+
+@login_page.route("/customer/logout",methods = ["GET","POST"])
+def c_logout():
+    session.clear()
+    flash("Logout Successfully",'success')
+    return redirect(url_for("login_page.c_login"))
+
 
 @login_page.route("/customer/register",methods = ["GET","POST"])
 def c_register():
@@ -64,3 +80,25 @@ def c_register():
             return redirect(url_for("login_page.c_login"))
 
     return render_template("c_register.html")
+
+
+@login_page.route("/supplier",methods = ["GET","POST"])
+def s_login():
+    if request.method=="POST":
+        name=request.form["name"]
+        password=request.form["password"]
+        if(name=="supplier" and password=="supplier"):
+            session["name"]=name
+
+            return redirect(url_for("supplier"))
+        else:
+            flash("Username or Password Incorrect",'danger')
+            return redirect(url_for("login_page.s_login"))
+    return render_template("s_login.html")
+
+
+@login_page.route("/supplier/logout",methods = ["GET","POST"])
+def s_logout():
+    session.clear()
+    flash("Logout Successfully",'success')
+    return redirect(url_for("login_page.s_login"))
