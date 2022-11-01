@@ -3,6 +3,7 @@ from flask import Flask,render_template,redirect, url_for,session
 from flask import request
 from login_page import login_page
 import sqlite3 as sql
+import datetime
 
 app = Flask(__name__)
 app.register_blueprint(login_page,url_prefix="/login")
@@ -145,13 +146,26 @@ def buyProduct():
       cur = con.cursor()
       try:
          productID = request.form['ProductID']
-         # productName = request.form['NEWProductName']
+         p = cur.execute("select productPrice from product where productID=?",(productID,))
+         price = p.fetchone()
+         # print(productPrice[0])
+         productPrice =int(price[0])
         #  productDescription=request.form['NEWProductDescription']
+         ProductName=request.form['NEWProductName']
+
          ProductQTY=request.form['NEWProductQty']
          print(productID,ProductQTY)
          print(session["name"])
+
+         date = datetime.date.today().strftime("%d-%m-%Y")
+         time = datetime.datetime.now().strftime("%I:%M%p")
+
+         cost = int(ProductQTY)*productPrice
+
          cur.execute("UPDATE Product SET QTY = QTY-? WHERE productID = ?",(ProductQTY,productID) )
-         
+
+         cur.execute('''insert into purchase(customerName,productName,QTY,purchaseTime,purchaseDate,purchaseCost)
+                        values(?,?,?,?,?,?)''',(session["name"],ProductName,ProductQTY,time,date,cost))
          con.commit()
          msg = "Product Edited "
       except Exception:
@@ -163,5 +177,22 @@ def buyProduct():
          con.close()
          return redirect(url_for('customer')+"?msg="+msg)
 
+@app.route("/admin/purchase",methods=["GET","POST"])
+def purchase():
+   con = sql.connect("database.sqlite")
+   con.row_factory = sql.Row
+   
+   cur = con.cursor()
+   cur.execute("select * from purchase")
+   
+   rows = cur.fetchall();
+   # print(rows['purchaseDate'])
+   # for row in rows:
+   #    print(row)
+   # print(type(rows))
+   rows.reverse()
+   return  render_template('purchase.html',rows = rows,user=session["name"])
+   
+
 if __name__ == '__main__':
-    app.run(port=5000,debug=True)
+    app.run(port=5005,debug=True)

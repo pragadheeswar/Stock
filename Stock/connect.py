@@ -13,11 +13,14 @@ conn = sql.connect('database.sqlite')
 
 # conn.execute("insert into customer values(1,'User1','111','Street 1','9876543210','user1@gmail.com')")
 # conn.execute("insert into customer values(2,'User2','222','Street 2','9846543210','user2@gmail.com')")
-conn.execute("insert into customer (customerName,customerPassword,customerAddress,customerMobile,customerEmail) values(?,?,?,?,?)",('ds','sdf','dsaf','adsf','fd'))
+# conn.execute("insert into customer (customerName,customerPassword,customerAddress,customerMobile,customerEmail) values(?,?,?,?,?)",('ds','sdf','dsaf','adsf','fd'))
 
 
 # conn.execute("UPDATE Product SET QTY = QTY+? WHERE productID = ?",(20,2) )
 
-
+# conn.execute('''create table purchase(purchaseID integer primary key ,customerName test,
+#                 productName text,QTY integer,purchaseTime text,purchaseDate text,purchaseCost integer)''')
+# conn.execute("insert into purchase values(1,'User1','Glass',10,'07:36PM','01-11-2022',20)")
+conn.execute("delete from purchase")
 conn.commit()
 conn.close()
