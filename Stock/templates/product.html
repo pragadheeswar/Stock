@@ -32,20 +32,20 @@
 <div class="container">
   <h2>Product Information</h2>
 
- <!-- <div class="float-md-right">
-  <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#exampleModal">ADD PRODUCT</button></div>
+ <div class="float-md-right">
+  <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#exampleModal">Request</button></div>
   <div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
   <div class="modal-dialog" role="document">
   <div class="modal-content">
       <div class="modal-header">
-        <h5 class="modal-title" id="exampleModalLabel">ADD PRODUCT</h5>
+        <h5 class="modal-title" id="exampleModalLabel">Request Product</h5>
         <button type="button" class="close" data-dismiss="modal" aria-label="Close">
           <span aria-hidden="true">&times;</span>
         </button>
       </div>
       <div class="modal-body">
             <div class="col-md-4"/> 
-        <form class="form-group" action = "{{ url_for('addProduct') }}" method = "POST">
+        <form class="form-group" action = "{{ url_for('requestProduct') }}" method = "POST">
             <div class="form-group">
               Name 
                <input class="form-group" type="text" name="pn" placeholder="Product Name" id="p_name" required>
@@ -54,10 +54,10 @@
               QTY 
                <input class="form-group" type="text" name="pq" placeholder="Product QTY" id="P_QTY" required>
             </div>
-            <div class="form-group">
+            <!-- <div class="form-group">
               Price 
                <input class="form-group" type="text" name="pp" placeholder="Product Price" id="P_price" required>
-            </div>
+            </div> -->
       </div>
       <div class="modal-footer">
         <input class="btn btn-success" class="form-control"  type="Submit" value="Submit" />
@@ -67,7 +67,7 @@
   </form></div>
   </form>
   </div> 
- </div>  -->
+ </div> 
 
  </br>
 </br>

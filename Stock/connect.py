@@ -21,6 +21,12 @@ conn = sql.connect('database.sqlite')
 # conn.execute('''create table purchase(purchaseID integer primary key ,customerName test,
 #                 productName text,QTY integer,purchaseTime text,purchaseDate text,purchaseCost integer)''')
 # conn.execute("insert into purchase values(1,'User1','Glass',10,'07:36PM','01-11-2022',20)")
-conn.execute("delete from purchase")
+
+# conn.execute('''CREATE TABLE request (requestID integer primary key,requestName text,
+#                                         requestQTY interger) ''')
+conn.execute("alter table request add column requestPrice integer")
+
+# conn.execute("insert into request values (1,'Glass',10)")
+conn.execute("delete from request")
 conn.commit()
 conn.close()

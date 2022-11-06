@@ -1,5 +1,5 @@
 import traceback
-from flask import Flask,render_template,redirect, url_for,session
+from flask import Flask,render_template,redirect, url_for,session,flash
 from flask import request
 from login_page import login_page
 import sqlite3 as sql
@@ -110,16 +110,19 @@ def editQTY():
 
       try:
          productID = request.form['ProductID']
-         # productName = request.form['NEWProductName']
+         productName = request.form['NEWProductName']
         #  productDescription=request.form['NEWProductDescription']
          ProductQTY=request.form['NEWProductQTY']
          print(productID,ProductQTY)
          cur.execute("UPDATE Product SET QTY = QTY+? WHERE productID = ?",(ProductQTY,productID) )
+         cur.execute("UPDATE Product SET productName = ? WHERE productID = ?",(productName,productID) )
+
          
          con.commit()
          msg = "Product Edited "
-      except:
+      except Exception:
          con.rollback()
+         traceback.print_exc()
          msg = "error in operation"
       
       finally:
@@ -157,17 +160,26 @@ def buyProduct():
          print(productID,ProductQTY)
          print(session["name"])
 
-         date = datetime.date.today().strftime("%d-%m-%Y")
-         time = datetime.datetime.now().strftime("%I:%M%p")
+         old=cur.execute("Select QTY from product where productID = ?",(productID,))
+         old=old.fetchone()
+         # print(old[0])
+         oldQTY = int(old[0])
 
-         cost = int(ProductQTY)*productPrice
+         if(int(ProductQTY) <= oldQTY):
+            date = datetime.date.today().strftime("%d-%m-%Y")
+            time = datetime.datetime.now().strftime("%I:%M%p")
 
-         cur.execute("UPDATE Product SET QTY = QTY-? WHERE productID = ?",(ProductQTY,productID) )
+            cost = int(ProductQTY)*productPrice
 
-         cur.execute('''insert into purchase(customerName,productName,QTY,purchaseTime,purchaseDate,purchaseCost)
-                        values(?,?,?,?,?,?)''',(session["name"],ProductName,ProductQTY,time,date,cost))
-         con.commit()
-         msg = "Product Edited "
+            cur.execute("UPDATE Product SET QTY = QTY-? WHERE productID = ?",(ProductQTY,productID) )
+
+            cur.execute('''insert into purchase(customerName,productName,QTY,purchaseTime,purchaseDate,purchaseCost)
+                           values(?,?,?,?,?,?)''',(session["name"],ProductName,ProductQTY,time,date,cost))
+            con.commit()
+            msg = "Product Edited "
+         else:
+            flash("This much of stock not is available")
+            msg= "no stock"
       except Exception:
          con.rollback()
          msg = "error in operation"
@@ -193,6 +205,128 @@ def purchase():
    rows.reverse()
    return  render_template('purchase.html',rows = rows,user=session["name"])
    
+@app.route('/requestProduct',methods = ['POST'])
+def requestProduct():
+   if request.method == 'POST':
+      try:
+         pn = request.form['pn']
+         pq = request.form['pq']
+         # pp = request.form['pp']
+
+        
+         
+         with sql.connect("database.sqlite") as con:
+            cur = con.cursor()
+            id = cur.execute("select productID from product where ProductName = ?",(pn,))
+            id = id.fetchone()
+            if id is None:
+               cur.execute("INSERT INTO request (requestName,requestQTY) VALUES (?,?)",(pn,pq) )
+            else:
+               cur.execute("INSERT INTO request (requestName,requestQTY,requestPrice) VALUES (?,?,?)",(pn,pq,id[0]) )
+               
+            con.commit()
+            msg = "Record added"
+      except:
+         con.rollback()
+         msg = "error in  operation"
+      
+      finally:
+         con.close()
+         return redirect(url_for('product')+"?msg="+msg)
+
+@app.route("/request",methods=["GET","POST"])
+def supplierRequest():
+   con = sql.connect("database.sqlite")
+   con.row_factory = sql.Row
+   
+   cur = con.cursor()
+   cur.execute("select * from request")
+   
+   rows = cur.fetchall();
+   # print(session["user"])
+   return  render_template('supplier_req.html',rows = rows,user=session["name"])
+
+@app.route("/giveRequest",methods=["GET","POST"])
+def giveRequest():
+   if request.method == 'POST':
+      con = sql.connect("database.sqlite")
+      cur = con.cursor()
+
+
+      try:
+         productName = request.form['NEWProductName']
+         productQTY=request.form['NEWProductQTY']
+         productPrice = request.form['NEWProductPrice']
+
+         # print(productName,ProductQTY,productPrice)
+         id = cur.execute("select productID from product where ProductName = ?",(productName,))
+         id = id.fetchone()
+         if id is None:
+            cur.execute("INSERT INTO Product (productName,QTY,productPrice) VALUES (?,?,?)",(productName,productQTY,productPrice))
+         else:
+            # cur.execute()
+            cur.execute("UPDATE Product SET QTY = QTY+? WHERE productID = ?",(productQTY,id[0]) )
+
+         # cur.execute("UPDATE Product SET productName = ? WHERE productID = ?",(ProductName,productID) )
+
+         
+         con.commit()
+         msg = "Product Edited "
+      except:
+         con.rollback()
+         msg = "error in operation"
+      
+      finally:
+         con.close()
+         return redirect(url_for('supplierRequest')+"?msg="+msg)
+@app.route("/supplyNewProduct",methods=["GET","POST"])
+def supplyNewProduct():
+   if request.method == 'POST':
+      con = sql.connect("database.sqlite")
+      try:
+         cur = con.cursor()
+
+         requestID=request.form["ProductID"]
+         productName=request.form["NEWProductName"]
+         productQTY = request.form["NEWProductQTY"]
+         productPrice = request.form["NEWProductPrice"]
+         # print(requestID,productName,productQTY,productPrice)
+         cur.execute("INSERT INTO Product (productName,QTY,productPrice) VALUES (?,?,?)",(productName,productQTY,productPrice))
+         cur.execute("DELETE FROM request WHERE requestID = ?",(requestID,))
+         # print(requestID)
+         con.commit()
+         msg = "Added"
+         # return redirect(url_for('supplierRequest'))
+      except:
+         con.rollback()
+         msg = "error in operation"
+      finally:
+         con.close()
+         return redirect(url_for('supplierRequest')+"?msg="+msg)
+
+@app.route("/supplyProduct",methods=["GET","POST"])
+def supplyProduct():
+   if request.method == 'POST':
+      con = sql.connect("database.sqlite")
+      cur = con.cursor()
+      try:
+         requestID=request.form["ADDProductID"]
+         productName=request.form["ADDProductName"]
+         productQTY = request.form["ADDProductQTY"]
+         cur.execute("UPDATE Product SET QTY = QTY+? WHERE productName = ?",(productQTY,productName) )
+         cur.execute("DELETE FROM request WHERE requestID = ?",(requestID,))
+         con.commit()
+         msg = "Added"
+      except:
+         con.rollback()
+         msg = "error in operation"
+         # print(requestID,productName,productQTY)
+      finally:
+         con.close()
+         return redirect(url_for('supplierRequest')+"?msg="+msg)     
+
+
+         # productPrice = request.form["NEWProductPrice"]
 
 if __name__ == '__main__':
-    app.run(port=5005,debug=True)
+    app.run(port=5050,debug=True)
