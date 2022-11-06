@@ -9,6 +9,12 @@ app = Flask(__name__)
 app.register_blueprint(login_page,url_prefix="/login")
 app.secret_key="dskjaf"
 
+
+@app.route("/")
+def home():
+   
+   return render_template("home.html")
+
 @app.route("/admin/product")
 def product():
    con = sql.connect("database.sqlite")
@@ -18,8 +24,23 @@ def product():
    cur.execute("select * from Product")
    
    rows = cur.fetchall();
+   con.close()
    return  render_template('product.html',rows = rows,user=session["name"]) 
 
+@app.route("/admin")
+def dashboard():
+   con = sql.connect("database.sqlite")
+   # con.row_factory = sql.Row
+   
+   cur = con.cursor()
+   cur.execute("select productName,QTY from Product order by QTY desc")
+   rows = cur.fetchmany(8)
+   lables = [row[0] for row in rows]
+   data = [row[1] for row in rows]
+   # print(lables,data)
+   # print("helo")
+   con.close()
+   return render_template("dashboard.html",lables=lables,data=data)
 
 @app.route('/editProduct',methods = ['POST'])
 def editProduct():
@@ -329,4 +350,4 @@ def supplyProduct():
          # productPrice = request.form["NEWProductPrice"]
 
 if __name__ == '__main__':
-    app.run(port=5050,debug=True)
+    app.run(port=5000,debug=True)

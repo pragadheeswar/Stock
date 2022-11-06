@@ -1,0 +1,93 @@
+body{
+    background-color: azure;
+
+    background-image: url(https://uploads-ssl.webflow.com/60edc0a8835d5b38bf11f03f/61cf04f457f55252a5a31c53_Cloud-based-Inventory-Management-System.png);
+    height:100%;
+    background-position:center;
+    background-repeat: no-repeat;
+    background-size: cover;
+}
+
+.container{
+    text-align:center;
+    padding-top:100px;
+    
+}
+
+.main{
+    
+    padding: 80px;
+    display:inline-block;
+    border-radius: 30px;
+    box-shadow: 2px 2px 4px 4px white;
+}
+
+h1{
+    font-size: 80px;
+    font-family: Arial, Helvetica, sans-serif;
+    color:black;
+    
+
+}
+
+.buttons{
+    margin-top: 40px;
+}
+
+a{
+    text-decoration:none; 
+    
+    color:white
+    
+}
+
+.button1{
+    margin-right:40px;
+    padding: 10px 30px 10px 30px ;
+    background-color:transparent;
+    border-radius: 8px;
+    font-size: 25px;
+    cursor:pointer;
+    box-shadow: 1px 1px 2px 2px white;
+    text-decoration-color:white ;
+    border-color: white;
+   
+}
+.button2{
+    margin-right:40px;
+    margin-left: 40px;
+    padding: 10px 30px 10px 30px ;
+    font-size: 25px;
+    background-color:transparent;
+    border-radius: 8px;
+    cursor:pointer;
+    box-shadow: 1px 1px 2px 2px white;
+    text-decoration-color:white ;
+    border-color: white;
+}
+.button3{
+    margin-right: 40px;
+    margin-left: 40px;
+    padding: 10px 30px 10px 30px ;
+    font-size: 25px;
+    text-decoration-color:white;
+    background-color: transparent;
+    border-radius: 8px;
+    cursor:pointer;
+    box-shadow: 1px 1px 2px 2px white;
+    border-color: white;
+}
+
+
+.button1:hover{
+    background-color: rgb(44, 44, 44);
+}
+
+
+.button2:hover{
+    background-color: rgb(44, 44, 44);
+}
+
+.button3:hover{
+    background-color: rgb(44, 44, 44);
+}
