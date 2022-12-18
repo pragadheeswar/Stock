@@ -58,6 +58,7 @@ def editProduct():
          
          con.commit()
          msg = "Product Edited "
+         flash("Product Edited","success")
       except:
          con.rollback()
          msg = "error in operation"
@@ -75,6 +76,7 @@ def deleteProduct(productID):
             
             con.commit()
             msg = "Product Deleted"
+            flash("Product Deleted","danger")
       except:
             con.rollback()
             msg = "error in operation"
@@ -198,8 +200,9 @@ def buyProduct():
                            values(?,?,?,?,?,?)''',(session["name"],ProductName,ProductQTY,time,date,cost))
             con.commit()
             msg = "Product Edited "
+            flash("Product Purchased","success")
          else:
-            flash("This much of stock not is available")
+            flash("This much of stock is not available","error")
             msg= "no stock"
       except Exception:
          con.rollback()
@@ -246,6 +249,7 @@ def requestProduct():
                cur.execute("INSERT INTO request (requestName,requestQTY,requestPrice) VALUES (?,?,?)",(pn,pq,id[0]) )
                
             con.commit()
+            flash("Request sent","success")
             msg = "Record added"
       except:
          con.rollback()
@@ -264,7 +268,13 @@ def supplierRequest():
    cur.execute("select * from request")
    
    rows = cur.fetchall();
+   # print(f)
    # print(session["user"])
+   # if f !=None:
+   # flash(s,"success")
+   if request.method == 'POST':
+      flash("hello","success")
+
    return  render_template('supplier_req.html',rows = rows,user=session["name"])
 
 @app.route("/giveRequest",methods=["GET","POST"])
@@ -342,6 +352,7 @@ def supplyProduct():
          con.rollback()
          msg = "error in operation"
          # print(requestID,productName,productQTY)
+         flash("Product Added","success")
       finally:
          con.close()
          return redirect(url_for('supplierRequest')+"?msg="+msg)     

@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Stock Maintanance</title>
+    <title>Stock</title>
 
     <link rel="stylesheet" href="{{url_for('static',filename='home.css')}}">
 </head>
@@ -11,15 +11,20 @@
 <body>
     <div class="container">
         <div class="main">
-            <h1>Stock Maintenance System</h1>
+            <h1>Stock Maintenance
+                <br>System
+            </h1>
+            
         </div>
         <div class="buttons">
             <button class="button1">
                 <a href="{{url_for('login_page.admin_login')}}">Admin</a>
             </button>
+            <br>
             <button class="button2">
                 <a href="{{url_for('login_page.c_login')}}">Customer</a>
             </button>
+            <br>
             <button class="button3">
                 <a href="{{url_for('login_page.s_login')}}">Supplier</a>
             </button>

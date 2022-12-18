@@ -32,6 +32,14 @@
 <div class="container">
   <h2>Product Information</h2>
 
+  {% with messages = get_flashed_messages(with_categories=true) %}
+                {% if messages %}
+                    {% for category,message in messages %}
+                        <div class="alert alert-{{category}}">{{message}}</div>
+                    {% endfor %}
+                {% endif %}
+                {% endwith %}
+
  <div class="float-md-right">
   <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#exampleModal">Request</button></div>
   <div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
@@ -144,3 +152,9 @@
          }
    </script>
 </script>
+
+<!-- <script>
+  $(document).ready(function(){
+      $(".alert").hide(3)
+  });
+</script> -->
